@@ -39,6 +39,7 @@ template <class tAtrb> class cLista {
   
 	// Constructor function of a node on the list:
   cLista<tAtrb>(tAtrb atrb);
+  cLista<tAtrb>();
 
 	// Function that returns the `tail` i.e. `l->prox`
   cLista* tail();
@@ -74,6 +75,14 @@ template <class tAtrb>
 cLista<tAtrb>::cLista(tAtrb atrb)
 {
   this->atrb = atrb;
+  this->prox = NULL;
+}
+
+// Build a node of the list.
+template <class tAtrb>
+cLista<tAtrb>::cLista()
+{
+  this->atrb = NULL;
   this->prox = NULL;
 }
 
