@@ -2,32 +2,30 @@
 #include "lista.hpp"
 
 // Build a node of the list.
-cLista::cLista(tAtrb atrb)
+template <class tAtrb>
+cLista<tAtrb>::cLista(tAtrb atrb)
 {
   this->atrb = atrb;
   this->prox = NULL;
 }
 
-// Build a node of the list.
-cLista* cLista::cLista(tAtrb atrb)
-{
-	return new cLista(atrb);
-}
-
-cLista* cLista::tail()
+template <class tAtrb>
+cLista<tAtrb>* cLista<tAtrb>::tail()
 {
   return this->prox;
 }
 
-tAtrb cLista::head()
+template <class tAtrb>
+tAtrb cLista<tAtrb>::head()
 {
   return this->atrb;
 }
 
 // Return this->tail() and make this->prox = NULL.
-cLista* cLista::cuttail()
+template <class tAtrb>
+cLista<tAtrb>* cLista<tAtrb>::cuttail()
 {
-  cLista* aux = this->tail();
+  cLista<tAtrb>* aux = this->tail();
   
   this->prox = NULL;
   
@@ -35,7 +33,8 @@ cLista* cLista::cuttail()
 }
 
 // Returns this->head() and free the header cell memory space.
-tAtrb cLista::rmhead()
+template <class tAtrb>
+tAtrb cLista<tAtrb>::rmhead()
 {
   tAtrb aux = this->head();
   
@@ -50,9 +49,10 @@ tAtrb cLista::rmhead()
 //   aux = list1->cuttail();
 //   list1->link(list2);
 //   list2->cat(aux);
-int cLista::cat(cLista* list)
+template <class tAtrb>
+int cLista<tAtrb>::cat(cLista<tAtrb>* list)
 {
-	cLista* aux = this;
+	cLista<tAtrb>* aux = this;
 
   // find the last item from head:
   while(aux->tail()) aux = aux->tail();
@@ -65,7 +65,8 @@ int cLista::cat(cLista* list)
 
 // Link the this node with the tail node. (this->prox = tail)
 // Beware: If this have a tail, the tail pointer will be overwrited.
-int cLista::link(cLista* tail)
+template <class tAtrb>
+int cLista<tAtrb>::link(cLista<tAtrb>* tail)
 {
   // Link the head to the tail
   this->prox = tail;
@@ -80,9 +81,10 @@ int cLista::link(cLista* tail)
 
 // Insert an item in front of the header cell of l.
 // (insert it on the top of the stack)
-cLista* cLista::push(tAtrb atrb)
+template <class tAtrb>
+cLista<tAtrb>* cLista<tAtrb>::push(tAtrb atrb)
 {
-  cLista* aux = new cLista(atrb);
+  cLista<tAtrb>* aux = new cLista(atrb);
   aux->link(this->tail());
   this->link(aux);
   return this;
@@ -91,9 +93,10 @@ cLista* cLista::push(tAtrb atrb)
 // Remove and free the item in front of the header cell of l.
 // Also links the header to the removed cell tail.
 // (extract the item on the top of the stack)
-tAtrb cLista::pop()
+template <class tAtrb>
+tAtrb cLista<tAtrb>::pop()
 {
-  cLista* aux = this->tail();
+  cLista<tAtrb>* aux = this->tail();
   this->link(aux->tail());
   return aux->rmhead();
 }

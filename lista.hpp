@@ -20,23 +20,26 @@
 // Change it if tAtrb is not a pointer.
 #define tAtrbInval NULL
 
-template <class* tAtrb> class cLista {
+#define hd(l) l->head()
+#define tl(l) l->tail()
+
+template <class tAtrb> class cLista {
 
   private:
 
 	tAtrb atrb;
 	cLista* prox;
-  
-	// Constructor function of a node on the list:
-  cLista(tAtrb atrb);
+
+	// Set to true if atrb was created inside this class.
+	bool deleteAtrb;
 
 	public:
   
   /* Functions */
-
-	// Factory function of a node on the list:
-  cLista* pLista(tAtrb atrb);
   
+	// Constructor function of a node on the list:
+  cLista<tAtrb>(tAtrb atrb);
+
 	// Function that returns the `tail` i.e. `l->prox`
   cLista* tail();
   
@@ -66,15 +69,110 @@ template <class* tAtrb> class cLista {
   tAtrb pop();
 };
 
+// Build a node of the list.
+template <class tAtrb>
+cLista<tAtrb>::cLista(tAtrb atrb)
+{
+  this->atrb = atrb;
+  this->prox = NULL;
+}
+
+template <class tAtrb>
+cLista<tAtrb>* cLista<tAtrb>::tail()
+{
+  return this->prox;
+}
+
+template <class tAtrb>
+tAtrb cLista<tAtrb>::head()
+{
+  return this->atrb;
+}
+
+// Return this->tail() and make this->prox = NULL.
+template <class tAtrb>
+cLista<tAtrb>* cLista<tAtrb>::cuttail()
+{
+  cLista<tAtrb>* aux = this->tail();
+  
+  this->prox = NULL;
+  
+  return aux;
+}
+
+// Returns this->head() and free the header cell memory space.
+template <class tAtrb>
+tAtrb cLista<tAtrb>::rmhead()
+{
+  tAtrb aux = this->head();
+  
+  delete this;
+  
+  return aux;
+}
+
+// Concatenate two lists into one -- Complexity O(list1.length).
+// Beware this function may create a circular list thus: infinit loop.
+// To insert a list inside another list do:
+//   aux = list1->cuttail();
+//   list1->link(list2);
+//   list2->cat(aux);
+template <class tAtrb>
+int cLista<tAtrb>::cat(cLista<tAtrb>* list)
+{
+	cLista<tAtrb>* aux = this;
+
+  // find the last item from head:
+  while(aux->tail()) aux = aux->tail();
+  
+  // Concatenate the two lists if head!=NULL:
+  if(aux) aux->prox = list;
+  
+  return 0;
+}
+
+// Link the this node with the tail node. (this->prox = tail)
+// Beware: If this have a tail, the tail pointer will be overwrited.
+template <class tAtrb>
+int cLista<tAtrb>::link(cLista<tAtrb>* tail)
+{
+  // Link the head to the tail
+  this->prox = tail;
+  
+  return 0;
+}
+
+/* * * * * Stack Operations * * * * */
+
+// This operations assumes the header cell contains no value.
+// The stack is built as the tail of the this cell.
+
+// Insert an item in front of the header cell of l.
+// (insert it on the top of the stack)
+template <class tAtrb>
+cLista<tAtrb>* cLista<tAtrb>::push(tAtrb atrb)
+{
+  cLista<tAtrb>* aux = new cLista(atrb);
+  aux->link(this->tail());
+  this->link(aux);
+  return this;
+}
+
+// Remove and free the item in front of the header cell of l.
+// Also links the header to the removed cell tail.
+// (extract the item on the top of the stack)
+template <class tAtrb>
+tAtrb cLista<tAtrb>::pop()
+{
+  cLista<tAtrb>* aux = this->tail();
+  this->link(aux->tail());
+  return aux->rmhead();
+}
+
+
 #endif
  
 // Useful macros:
-
-// For making an alias for the list:
-#ifndef NOMELISTA
-  #define NOMELISTA cLista;
-#endif 
-typedef cLista NOMELISTA;
 
 // For iterating over the list:
 #ifndef FORLISTA
@@ -82,5 +180,5 @@ typedef cLista NOMELISTA;
   #define forLista(l,i) for(i=l->tail();i;i=i->tail())
   // The for below makes the same as the above, but keeps
 	// track of the father node of the current loop node.
-  #define forListaPai(l,i,f) for(f=l,i=l->tail();i;i=i->tail(),f=tail(f))
+  #define forLista3(l,i,f) for(f=l,i=l->tail();i;i=i->tail(),f=f->tail())
 #endif
