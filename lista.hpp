@@ -32,11 +32,19 @@ template <class tAtrb> class cLista {
 	tAtrb atrb;
 	cLista* prox;
 
-	// Set to true if atrb was created inside this class.
-	bool deleteAtrb;
-
 	public:
-  
+
+	// len keeps the number of cells on this->tail().
+	//
+	// If you call any state change function on the list tail cells
+	// the len value will not be updated.
+	//
+	// The only functions you can use on the tail safely are:
+	//   hd() and tail().
+	//
+	// Or len will contain an incorrect value.
+	int len=0;
+
   /* Functions */
   
 	// Constructor function of a node on the list:
@@ -44,10 +52,10 @@ template <class tAtrb> class cLista {
   cLista<tAtrb>();
 
 	// Function that returns the `tail` i.e. `l->prox`
-  cLista* tail();
+  cLista*& tail();
   
 	// Returns the tAtrb file on the header cell of the list.
-  tAtrb head();
+  tAtrb& head();
   
 	// Returns the tail(l) and makes l->prox = NULL;
   cLista* cuttail();
@@ -91,13 +99,13 @@ cLista<tAtrb>::cLista()
 }
 
 template <class tAtrb>
-cLista<tAtrb>* cLista<tAtrb>::tail()
+cLista<tAtrb>*& cLista<tAtrb>::tail()
 {
   return this->prox;
 }
 
 template <class tAtrb>
-tAtrb cLista<tAtrb>::head()
+tAtrb& cLista<tAtrb>::head()
 {
   return this->atrb;
 }
@@ -109,6 +117,9 @@ cLista<tAtrb>* cLista<tAtrb>::cuttail()
   cLista<tAtrb>* aux = this->tail();
   
   this->prox = NULL;
+
+	// Update length:
+	this->len = 0;
   
   return aux;
 }
@@ -135,8 +146,16 @@ int cLista<tAtrb>::cat(cLista<tAtrb>* list)
 {
 	cLista<tAtrb>* aux = this;
 
+	// Update length:
+	this->len += list->len+1;
+
   // find the last item from head:
-  while(aux->tail()) aux = aux->tail();
+  while(aux->tail()) {
+		// Update length:
+		aux->len += list->len+1;
+
+		aux = aux->tail();
+	}
   
   // Concatenate the two lists if head!=NULL:
   if(aux) aux->prox = list;
@@ -151,6 +170,9 @@ int cLista<tAtrb>::link(cLista<tAtrb>* tail)
 {
   // Link the head to the tail
   this->prox = tail;
+
+	// Update length:
+  this->len += tail->len+1;
   
   return 0;
 }
@@ -165,9 +187,14 @@ int cLista<tAtrb>::link(cLista<tAtrb>* tail)
 template <class tAtrb>
 cLista<tAtrb>* cLista<tAtrb>::push(tAtrb atrb)
 {
+	// Create and insert a new attribute:
   cLista<tAtrb>* aux = new cLista(atrb);
-  aux->link(this->tail());
-  this->link(aux);
+  aux->prox = this->tail();
+  this->prox = aux;
+
+	// Update length:
+  this->prox->len = this->len;
+	this->len++;
   return this;
 }
 
@@ -178,6 +205,10 @@ cLista<tAtrb>* cLista<tAtrb>::push(cLista* node)
 {
   node->link(this->tail());
   this->link(node);
+
+	// Update length:
+  this->prox->len = this->len;
+	this->len++;
   return this;
 }
 
@@ -188,7 +219,10 @@ template <class tAtrb>
 tAtrb cLista<tAtrb>::pop()
 {
   cLista<tAtrb>* aux = this->tail();
-  this->link(aux->tail());
+  this->prox = aux->tail();
+
+	// Update length:
+	this->len--;
   return aux->rmhead();
 }
 
