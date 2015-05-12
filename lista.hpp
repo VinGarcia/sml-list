@@ -22,6 +22,8 @@
 
 #define hd(l) l->head()
 #define tl(l) l->tail()
+#define rmhd(l) l->rmhead()
+#define cuttl(l) l->cuttail()
 
 template <class tAtrb> class cLista {
 
