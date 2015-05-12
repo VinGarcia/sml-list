@@ -63,6 +63,8 @@ template <class tAtrb> class cLista {
   
 	// Insert an item atrb right after the header cell of l.
   cLista* push(tAtrb atrb);
+	// Insert a node right after the header cell of l.
+  cLista* push(cLista* node);
   
   // Extrai e desaloca l->prox sem quebrar a lista, e retorna seu valor.
 	// Extract and unalloc l->prox cell an returns its value.
@@ -164,6 +166,16 @@ cLista<tAtrb>* cLista<tAtrb>::push(tAtrb atrb)
   cLista<tAtrb>* aux = new cLista(atrb);
   aux->link(this->tail());
   this->link(aux);
+  return this;
+}
+
+// Insert a node in front of the header cell of l.
+// (insert it on the top of the stack)
+template <class tAtrb>
+cLista<tAtrb>* cLista<tAtrb>::push(cLista* node)
+{
+  node->link(this->tail());
+  this->link(node);
   return this;
 }
 
