@@ -237,5 +237,6 @@ tAtrb cLista<tAtrb>::pop()
   #define forLista(l,i) for(i=l->tail();i;i=i->tail())
   // The for below makes the same as the above, but keeps
 	// track of the father node of the current loop node.
-  #define forLista3(l,i,f) for(f=l,i=l->tail();i;i=i->tail(),f=f->tail())
+  #define forLista3(l,i,f) \
+	  for(f=l,i=l->tail();i;f=i,i=i->tail())
 #endif
