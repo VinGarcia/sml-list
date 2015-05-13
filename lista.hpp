@@ -172,7 +172,7 @@ int cLista<tAtrb>::link(cLista<tAtrb>* tail)
   this->prox = tail;
 
 	// Update length:
-  this->len += tail->len+1;
+  this->len = tail->len+1;
   
   return 0;
 }
